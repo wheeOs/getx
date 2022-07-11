@@ -13,6 +13,11 @@ class Request<T> {
   final Uri url;
 
   final Decoder<T>? decoder;
+  /// the interception happens before the default response gets created which is
+  /// created after the decoding process and such. For example if you want to 
+  /// handle certain response status codes other than 200+ and eventually throw
+  /// respective error objects, you're able to do so with this interceptor
+  final ResponseInterceptor<T>? responseInterceptor;
 
   /// The Http Method from this [Request]
   /// ex: `GET`,`POST`,`PUT`,`DELETE`
@@ -44,6 +49,7 @@ class Request<T> {
     required this.files,
     required this.persistentConnection,
     required this.decoder,
+    this.responseInterceptor,
   });
 
   factory Request({
@@ -57,6 +63,7 @@ class Request<T> {
     FormData? files,
     bool persistentConnection = true,
     Decoder<T>? decoder,
+    ResponseInterceptor<T>? responseInterceptor,
   }) {
     if (followRedirects) {
       assert(maxRedirects > 0);
@@ -72,6 +79,7 @@ class Request<T> {
       files: files,
       persistentConnection: persistentConnection,
       decoder: decoder,
+      responseInterceptor: responseInterceptor
     );
   }
 
